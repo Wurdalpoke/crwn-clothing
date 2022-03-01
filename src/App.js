@@ -3,7 +3,7 @@ import './App.css';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import HomePage from './pages/homepage/homepage.component.jsx';
 import ShopPage from './pages/shop/shop.component';
@@ -21,7 +21,7 @@ class App extends React.Component {
 
   componentDidMount() {
     const { setCurrentUser } = this.props;
-
+    console.log(this.props.currentUser);
     this.unsubscribFromAuth = auth.onAuthStateChanged(async userAuth => {
       if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
@@ -46,22 +46,15 @@ class App extends React.Component {
     return (
       <div>
         <Header />
-        <Switch>
-          <Route exact path='/' component={HomePage} />
-          <Route exact path='/shop' component={ShopPage} />
-          <Route exact path='/checkout' component={CheckoutPage} />
-          <Route 
-            exact 
-            path='/signin' 
-            render = {() => 
-              this.props.currentUser ? (
-                <Redirect to='/' />
-              ) : (
-                <SignInAndSignUpPage/>
-              )
-            } 
+        <Routes>
+          <Route path='/' element={<HomePage/>} />
+          <Route path='shop' element={<ShopPage/>} />
+          <Route path='checkout' element={<CheckoutPage/>} />
+          <Route  
+            path='signin'
+            element={this.props.currentUser ? (<Navigate replace to='/' />) : (<SignInAndSignUpPage/>)} 
           />
-        </Switch>
+        </Routes>
       </div>
     );
   } 
